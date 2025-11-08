@@ -7,6 +7,24 @@ A collection of commonly used Bash functions to make your scripts cleaner and mo
 
 \#bash \#functions \#library \#bash-library
 
+## How to use
+
+Refer to the following instructions on how to make use of this product:
+
+1. Download the release package from [the Releases page](https://gitlab.com/the-common/bash-functions/-/releases).
+1. Extract the package.
+1. Include [the functions.sh file](functions.sh) in your project directory.
+1. Source the `functions.sh` file in your Bash scripts where you want to use the functions. For example:
+
+    ```bash
+    #!/usr/bin/env bash
+
+    if ! source /path/to/functions.sh; then
+        printf 'Error: Failed to load the common functions.\n' >&2
+        exit 1
+    fi
+    ```
+
 ## Licensing
 
 Unless otherwise noted([comment headers](https://reuse.software/spec-3.3/#comment-headers)/[REUSE.toml](https://reuse.software/spec-3.3/#reusetoml)), this product is licensed under [the 4.0 International version of the Creative Commons Attribution-ShareAlike license](https://creativecommons.org/licenses/by-sa/4.0/), or any of its more recent versions of your preference.
