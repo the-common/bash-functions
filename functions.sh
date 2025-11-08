@@ -677,8 +677,7 @@ switch_ubuntu_local_mirror(){
     if ! grep -q "${region_code}.archive.u" "${sources_list_file}"; then
         printf \
             'Info: Switching to use the local APT software repository mirror...\n'
-        if ! \
-            sed \
+        if ! sed \
                 --regexp-extended \
                 --in-place \
                 "s@//([[:alpha:]]+\\.)?archive\\.ubuntu\\.com@//${region_code}.archive.ubuntu.com@g" \
