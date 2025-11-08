@@ -76,7 +76,7 @@ get_distro_categories(){
 #
 # * 0: Command exists
 # * 1: Command does not exist
-check_command_existence(){
+is_command_exists(){
     local command="${1}"
     if ! command -v "${command}" >/dev/null; then
         printf \
@@ -96,7 +96,7 @@ check_command_existence(){
 # * 0: All required commands are available
 # * 1: At least one required command is not available
 # * 2: Generic error
-check_distro_specific_required_commands(){
+is_distro_specific_commands_available(){
     local distro_id="${1}"; shift
     local distro_categories="${1}"; shift
 
@@ -111,8 +111,8 @@ check_distro_specific_required_commands(){
             )
         ;;
         *rhel*)
-            if ! check_command_existence dnf \
-                && ! check_command_existence yum; then
+            if ! is_command_exists dnf \
+                && ! is_command_exists yum; then
                 flag_required_command_check_failed=true
             fi
 
@@ -148,7 +148,7 @@ check_distro_specific_required_commands(){
     esac
 
     for command in "${required_commands[@]}"; do
-        if ! check_command_existence "${command}"; then
+        if ! is_command_exists "${command}"; then
             flag_required_command_check_failed=true
         fi
     done
@@ -169,7 +169,7 @@ check_distro_specific_required_commands(){
 # * 0: All packages are installed
 # * 1: At least one package is not installed
 # * 2: Generic error
-check_archlinux_packages_installed(){
+is_archlinux_packages_installed(){
     local -a packages=("$@")
 
     if test "${#packages[@]}" -eq 0; then
@@ -192,7 +192,7 @@ check_archlinux_packages_installed(){
 # * 0: All packages are installed
 # * 1: At least one package is not installed
 # * 2: Generic error
-check_debian_packages_installed(){
+is_debian_packages_installed(){
     local -a packages=("$@")
 
     if test "${#packages[@]}" -eq 0; then
@@ -215,7 +215,7 @@ check_debian_packages_installed(){
 # * 0: All packages are installed
 # * 1: At least one package is not installed
 # * 2: Generic error
-check_redhat_packages_installed(){
+is_redhat_packages_installed(){
     local -a packages=("$@")
 
     if test "${#packages[@]}" -eq 0; then
@@ -238,7 +238,7 @@ check_redhat_packages_installed(){
 # * 0: All packages are installed
 # * 1: At least one package is not installed
 # * 2: Generic error
-check_distro_packages_installed(){
+is_distro_packages_installed(){
     local -a packages=("$@")
 
     if test "${#packages[@]}" -eq 0; then
@@ -265,15 +265,15 @@ check_distro_packages_installed(){
 
     case "${distro_categories}" in
         *debian*)
-            check_debian_packages_installed "${packages[@]}"
+            is_debian_packages_installed "${packages[@]}"
         ;;
         *rhel*)
-            check_redhat_packages_installed "${packages[@]}"
+            is_redhat_packages_installed "${packages[@]}"
         ;;
         '')
             case "${distro_id}" in
                 arch)
-                    check_archlinux_packages_installed "${packages[@]}"
+                    is_archlinux_packages_installed "${packages[@]}"
                 ;;
                 *)
                     printf \
@@ -472,7 +472,7 @@ refresh_package_manager_local_cache(){
     print_progress \
         'Refreshing the package manager local cache...'
 
-    if ! check_distro_specific_required_commands \
+    if ! is_distro_specific_commands_available \
         "${distro_id}" \
         "${distro_categories}"; then
         printf \
@@ -615,7 +615,7 @@ switch_ubuntu_local_mirror(){
         # For patching APT software source definition list
         sed
     )
-    if ! check_distro_packages_installed "${mirror_patch_dependency_pkgs[@]}"; then
+    if ! is_distro_packages_installed "${mirror_patch_dependency_pkgs[@]}"; then
         printf \
             'Info: Installing the runtime dependencies packages for the mirror patching functionality...\n'
         if ! install_distro_packages "${mirror_patch_dependency_pkgs[@]}"; then
@@ -902,7 +902,7 @@ workaround_git_dubious_ownership_error(){
         git
     )
     if test "${#required_packages[@]}" -gt 0; then
-        if ! check_distro_packages_installed "${required_packages[@]}"; then
+        if ! is_distro_packages_installed "${required_packages[@]}"; then
             if ! install_distro_packages "${required_packages[@]}"; then
                 printf \
                     'Error: Unable to install the required packages for the current distribution.\n' \
