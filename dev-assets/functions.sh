@@ -499,7 +499,7 @@ refresh_package_manager_local_cache(){
             printf \
                 '%s: Error: The OS distribution category "%s" is not supported.\n' \
                 "${FUNCNAME[0]}" \
-                "${distro_id}" \
+                "${distro_categories}" \
                 1>&2
             return 1
         ;;
