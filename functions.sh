@@ -634,11 +634,20 @@ switch_ubuntu_local_mirror(){
             'Warning: Unable to detect the local region code, falling back to the current settings.\n' \
             1>&2
         return 0
-    else
-        printf \
-            'Info: Local region code determined to be "%s".\n' \
-            "${region_code}"
     fi
+
+    local regex_region_code='^[a-z]{2,3}$'
+    if ! [[ "${region_code}" =~ ${regex_region_code} ]]; then
+        printf \
+            'Error: Local region code "%s" is not valid.\n' \
+            "${region_code}" \
+            1>&2
+        return 2
+    fi
+
+    printf \
+        'Info: Local region code determined to be "%s".\n' \
+        "${region_code}"
 
     if test -n "${region_code}"; then
         printf \
